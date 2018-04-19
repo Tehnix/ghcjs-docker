@@ -7,8 +7,8 @@ FROM fpco/stack-build:lts-8.11
 # COPY global-stack.yaml /root/.stack/global-project/stack.yaml
 # RUN stack config set resolver lts-8.11 \
 
-# RUN stack upgrade \
-#  && /root/.local/bin/stack setup --system-ghc --install-cabal 2.0.0.1
+RUN stack upgrade
+RUN /root/.local/bin/stack setup --system-ghc --install-cabal 2.0.0.1
 
 # RUN cd /tmp/setup-cabal \
 #  && stack install cabal-install
