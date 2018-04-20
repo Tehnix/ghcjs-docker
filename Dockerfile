@@ -1,8 +1,5 @@
 FROM fpco/stack-build:lts-11.5
 
-# Upgrade stack to a much newer version.
-RUN stack upgrade && mv /root/.local/bin/stack /usr/local/bin/stack
-
 # Install node.js for GHCJS.
 RUN curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash - \
  && apt-get update \
