@@ -10,7 +10,7 @@ FROM tehnix/ghcjs-docker:latest
 or in your `stack.yaml`,
 
 ```yaml
-resolver: lts-8.11
+resolver: lts-9.21
 compiler: ghcjs-0.2.1.9008011_ghc-8.0.2
 compiler-check: match-exact
 setup-info:
