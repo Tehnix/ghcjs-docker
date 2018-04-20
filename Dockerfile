@@ -1,18 +1,18 @@
 FROM fpco/stack-build:lts-8.11
 
-# COPY stack.yaml /tmp/setup-ghcjs/stack.yaml
-# COPY stack-cabal.yaml /tmp/setup-cabal/stack.yaml
+# Upgrade stack to a much newer version.
+RUN stack upgrade && mv /root/.local/bin/stack /usr/local/bin/stack
 
-# Update cabal to version 2.0.0.1.
-# COPY global-stack.yaml /root/.stack/global-project/stack.yaml
-# RUN stack config set resolver lts-8.11 \
+# Install node.js for GHCJS.
+RUN curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash - \
+ && apt-get update \
+ && apt-get install -y nodejs \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN stack upgrade
-RUN /root/.local/bin/stack setup --system-ghc --install-cabal 2.0.0.1
-
-# RUN cd /tmp/setup-cabal \
-#  && stack install cabal-install
-
-# RUN cd /tmp/setup-ghcjs && stack setup
+# Set up GHCJS.
+COPY src /tmp/setup-ghcjs
+RUN cd /tmp/setup-ghcjs \
+ && stack setup --system-ghc \
+ && rm -rf /tmp/setup-ghcjs
 
 ENTRYPOINT ["/bin/bash"]
