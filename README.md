@@ -29,11 +29,3 @@ extra-deps: []
 ```
 
 The LTS and GHCJS compiler information is located in the `stack.yaml` file, and the [fpco/stack-build](https://hub.docker.com/r/fpco/stack-build/) image is specified in the `Dockerfile`. The LTS in the `Dockerfile` is a newer one, than what we are actually building for. This is because we need a newer version of cabal, than what is supplied with the default corresponding LTS.
-
-
-```Dockerfile
-# Update cabal to version 2.0.0.1.
-# COPY global-stack.yaml /root/.stack/global-project/stack.yaml
-# RUN stack config set resolver lts-8.11 \
-# RUN /root/.local/bin/stack setup --system-ghc --install-cabal 2.0.0.1
-```

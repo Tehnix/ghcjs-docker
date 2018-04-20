@@ -1,4 +1,4 @@
-FROM fpco/stack-build:lts-8.11
+FROM fpco/stack-build:lts-11.5
 
 # Upgrade stack to a much newer version.
 RUN stack upgrade && mv /root/.local/bin/stack /usr/local/bin/stack
