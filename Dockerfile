@@ -11,5 +11,3 @@ COPY src /tmp/setup-ghcjs
 RUN cd /tmp/setup-ghcjs \
  && stack setup --system-ghc \
  && rm -rf /tmp/setup-ghcjs
-
-ENTRYPOINT ["/bin/bash"]
