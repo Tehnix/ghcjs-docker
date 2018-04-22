@@ -11,3 +11,7 @@ COPY src /tmp/setup-ghcjs
 RUN cd /tmp/setup-ghcjs \
  && stack setup --system-ghc \
  && rm -rf /tmp/setup-ghcjs
+
+RUN mkdir -p /src
+VOLUME /src
+WORKDIR /src
