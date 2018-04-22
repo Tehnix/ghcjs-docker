@@ -14,3 +14,8 @@ COPY src /tmp/setup-ghcjs
 RUN cd /tmp/setup-ghcjs \
  && stack setup --system-ghc \
  && rm -rf /tmp/setup-ghcjs
+
+# Create the directory to put the app in.
+RUN mkdir -p /src
+VOLUME /src
+WORKDIR /src

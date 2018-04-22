@@ -1,13 +1,7 @@
 # Docker images for GHCJS
 The purpose of this repository is to manage the `Dockerfile`s to build the images at [tehnix/ghcjs-docker](https://hub.docker.com/r/tehnix/ghcjs-docker). This is set up as an automated build repository, so changes here will trigger builds on docker hub.
 
-To use these images, simply specify the image in your `Dockerfile` to point here,
-
-```Dockerfile
-FROM tehnix/ghcjs-docker:latest
-```
-
-or in your `stack.yaml`,
+To use these images, first set up GHCJS in your `stack.yaml`,
 
 ```yaml
 resolver: lts-8.11
@@ -19,13 +13,93 @@ setup-info:
       ghcjs-0.2.1.9008011_ghc-8.0.2:
         url: https://github.com/matchwood/ghcjs-stack-dist/raw/master/ghcjs-0.2.1.9008011.tar.gz
         sha1: a72a5181124baf64bcd0e68a8726e65914473b3b
+
+extra-deps: []
+```
+
+Now, there's a couple of ways to go around using this image. My main advice is to setup a build script, something like this [stack-build-docker.sh](https://github.com/Tehnix/miso-isomorphic-stack/blob/master/stack-build-docker.sh) script.
+
+### Building with a Dockerfile
+
+Add a `Dockerfile`,
+
+```Dockerfile
+FROM tehnix/ghcjs-docker:lts-8.11
+
+RUN mkdir -p /src
+VOLUME /src
+WORKDIR /src
+```
+
+You can then use it by first building it (just has to be done once),
+
+```bash
+$ docker build .
+Sending build context to Docker daemon    626MB
+Step 1/4 : FROM tehnix/ghcjs-docker:lts-8.11
+...
+ ---> 6ef295b59aaf
+Successfully built 6ef295b59aaf
+```
+
+and then you can run your commands like,
+
+```bash
+$ docker run -v $(pwd):/src -it 6ef295b59aaf stack build
+```
+
+Obviously substituting the image name for the one your build produces. Alternatively tag the ,
+
+```bash
+$ docker build -t ghcjs:lts-8.11 .
+$ docker run -v $(pwd):/src -it $(docker images -q ghcjs:lts-8.11) stack build
+```
+
+#### Building straight with `tehnix/ghcjs-docker:lts-8.11`
+
+```bash
+$ docker run -v $(pwd):/src -it tehnix/ghcjs-docker:lts-8.11 stack build
+```
+
+### Persisting changes/builds
+
+One thing to note is that you have to commit your image afterwards, to persist the build.
+
+```bash
+$ docker -ps a
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS                         PORTS               NAMES
+c59aca6d8672        a00a947b8fd2                   "/usr/local/sbin/pid…"   3 minutes ago       Exited (143) 9 seconds ago                         keen_agnesi
+...
+$ docker commit c59aca6d8672 ghcjs-lts-8.11
+```
+
+Or,
+
+```bash
+$ docker commit $(docker ps -l -q) ghcjs:lts-8.11
+```
+
+Where `docker ps -l -q` gives the latest built container ID.
+
+# TODO
+Ideally, you would make `stack` manage the docker image, by having something like,
+
+```yaml
+resolver: lts-8.11
+compiler: ghcjs-0.2.1.9008011_ghc-8.0.2
+compiler-check: match-exact
+setup-info:
+  ghcjs:
+    source:
+      ghcjs-0.2.1.9008011_ghc-8.0.2:
+        url: https://github.com/matchwood/ghcjs-stack-dist/raw/master/ghcjs-0.2.1.9008011.tar.gz
+        sha1: a72a5181124baf64bcd0e68a8726e65914473b3b
+
 docker:
     enable: true
     repo: "tehnix/ghcjs-docker" # It will automatically add :lts-x.xx
     auto-pull: true
 system-ghc: false
-
-extra-deps: []
 ```
 
-The LTS and GHCJS compiler information is located in the `stack.yaml` file, and the [fpco/stack-build](https://hub.docker.com/r/fpco/stack-build/) image is specified in the `Dockerfile`. The LTS in the `Dockerfile` is a newer one, than what we are actually building for. This is because we need a newer version of cabal, than what is supplied with the default corresponding LTS.
+Unfortunately, `stack` will start looking for GHCJS on the host system, and therefore will not catch that GHCJS has already been built in the container image it's using. I'm suspect this has something to do with `setup-info`, but it's not entirely clear to me how to resolve this issue.
