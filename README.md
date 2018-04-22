@@ -17,6 +17,11 @@ setup-info:
 extra-deps: []
 ```
 
+The different versions are:
+
+- [GHCJS with lts-8.11](https://github.com/Tehnix/ghcjs-docker/tree/lts-8.11)
+- [GHCJS with lts-9.21](https://github.com/Tehnix/ghcjs-docker/tree/lts-9.21)
+
 Now, there's a couple of ways to go around using this image. My main advice is to setup a build script, something like this [stack-build-docker.sh](https://github.com/Tehnix/miso-isomorphic-stack/blob/master/stack-build-docker.sh) script.
 
 ### Building with a Dockerfile
