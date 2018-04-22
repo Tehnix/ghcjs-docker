@@ -17,7 +17,16 @@ setup-info:
 extra-deps: []
 ```
 
-Then add a `Dockerfile`,
+The different versions are:
+
+- [GHCJS with lts-8.11](https://github.com/Tehnix/ghcjs-docker/tree/lts-8.11)
+- [GHCJS with lts-9.21](https://github.com/Tehnix/ghcjs-docker/tree/lts-9.21)
+
+Now, there's a couple of ways to go around using this image. My main advice is to setup a build script, something like this [stack-build-docker.sh](https://github.com/Tehnix/miso-isomorphic-stack/blob/master/stack-build-docker.sh) script.
+
+### Building with a Dockerfile
+
+Add a `Dockerfile`,
 
 ```Dockerfile
 FROM tehnix/ghcjs-docker:lts-9.21
@@ -44,13 +53,41 @@ and then you can run your commands like,
 $ docker run -v $(pwd):/src -it 6ef295b59aaf stack build
 ```
 
-Obviously substituting the image name for the one your build produces.
+Obviously substituting the image name for the one your build produces. Alternatively tag the ,
 
-The LTS and GHCJS compiler information is located in the `stack.yaml` file, and the [fpco/stack-build](https://hub.docker.com/r/fpco/stack-build/) image is specified in the `Dockerfile`. The LTS in the `Dockerfile` is a newer one, than what we are actually building for. This is because we need a newer version of cabal, than what is supplied with the default corresponding LTS.
+```bash
+$ docker build -t ghcjs:lts-9.21 .
+$ docker run -v $(pwd):/src -it $(docker images -q ghcjs:lts-9.21) stack build
+```
 
+#### Building straight with `tehnix/ghcjs-docker:lts-9.21`
+
+```bash
+$ docker run -v $(pwd):/src -it tehnix/ghcjs-docker:lts-9.21 stack build
+```
+
+### Persisting changes/builds
+
+One thing to note is that you have to commit your image afterwards, to persist the build.
+
+```bash
+$ docker -ps a
+CONTAINER ID        IMAGE                          COMMAND                  CREATED             STATUS                         PORTS               NAMES
+c59aca6d8672        a00a947b8fd2                   "/usr/local/sbin/pid…"   3 minutes ago       Exited (143) 9 seconds ago                         keen_agnesi
+...
+$ docker commit c59aca6d8672 ghcjs-lts-9.21
+```
+
+Or,
+
+```bash
+$ docker commit $(docker ps -l -q) ghcjs:lts-9.21
+```
+
+Where `docker ps -l -q` gives the latest built container ID.
 
 # TODO
-It doesn't currently work perfectly. Ideally, you would make `stack` manage the docker, by having something like,
+Ideally, you would make `stack` manage the docker image, by having something like,
 
 ```yaml
 resolver: lts-9.21
@@ -69,3 +106,5 @@ docker:
     auto-pull: true
 system-ghc: false
 ```
+
+Unfortunately, `stack` will start looking for GHCJS on the host system, and therefore will not catch that GHCJS has already been built in the container image it's using. I'm suspect this has something to do with `setup-info`, but it's not entirely clear to me how to resolve this issue.
