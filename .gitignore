@@ -19,3 +19,4 @@ cabal.sandbox.config
 cabal.project.local
 .HTF/
 .DS_Store
+ghcjs-0.2.1.9009021*

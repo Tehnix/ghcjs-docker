@@ -86,6 +86,15 @@ $ docker commit $(docker ps -l -q) ghcjs:lts-9.21
 
 Where `docker ps -l -q` gives the latest built container ID.
 
+# Custom GHCJS Dist
+The GHCJS dist simply changes the install folder from `~/.ghcjs` to `~/.stack/ghcjs`. This is necessary, because stack will only copy over the `~/.stack` folder during docker image setup. This means that in `ghcjs-0.2.1.9009021/src/Compiler/Info.hs`, we've changed `getDefaultTopDir` and `getUserTopDir'` to prepend `stack`.
+
+If you make changes and need to make a .tar.gz archive again, on macOS you need to use GNU tar, to get the structure that stack expects,
+
+```bash
+$ gtar -czf ghcjs-0.2.1.9009021.tar.gz ghcjs-0.2.1.9009021
+```
+
 # TODO
 Ideally, you would make `stack` manage the docker image, by having something like,
 

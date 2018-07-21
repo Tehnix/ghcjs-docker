@@ -1,0 +1,63 @@
+name:           Test
+version:        0.1.0.0
+author:         Christian Kjaer Laustsen
+maintainer:     ckl@codetalk.io
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+cabal-version:  >= 1.10
+
+executable frontend
+  main-is: Main.hs
+  hs-source-dirs: .
+  build-depends: base
+               , directory
+               , Cabal
+               , mtl
+               , transformers
+               , transformers-compat
+               , lens
+               , unordered-containers
+               , vector
+               , filepath
+               , aeson
+               , text
+               , bytestring
+               , system-filepath
+               , shelly
+               , system-fileio
+               , optparse-applicative
+               , tar
+               , HTTP
+               , yaml
+               , process
+               , time
+               , unix-compat
+               , executable-path
+               , warp
+               , wai
+               , wai-extra
+               , wai-app-static
+               , wai-websockets
+               , webdriver
+               , lifted-base
+               , HUnit
+               , cryptohash
+               , hashable
+               , haskell-src-exts
+               , haskell-src-meta
+               , binary
+               , template-haskell
+               , parallel
+               , deepseq
+               , parsec
+               , ghc-paths
+               , ghc
+               , ghc-boot
+               , ghci
+               , random
+               , syb
+               , split
+               , base16-bytestring
+               , stringsearch
+  default-language: Haskell2010
